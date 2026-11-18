@@ -13,7 +13,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiohttp import web  # <-- Render port ochishi uchun qo'shildi
+from aiohttp import web
 
 # Majburiy kanallar. Yangi kanal qo'shish uchun ro'yxatga yozing: ["@kanal1", "@kanal2"]
 DEFAULT_CHANNELS = ["@kino_20227"]
@@ -316,7 +316,6 @@ async def on_text(message: Message, bot: Bot) -> None:
 async def handle_web(request):
     return web.Response(text="Bot is running!")
 
-async b_runner = None
 
 async def start_web_server():
     app = web.Application()
