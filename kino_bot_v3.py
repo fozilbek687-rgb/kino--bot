@@ -14,10 +14,6 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-# ====== FAQAT KOMPYUTERDA ISHLATISH UCHUN. Bu faylni GitHub'ga YUKLAMANG! ======
-BOT_TOKEN_DEFAULT = "9228102609:AAFoiGix4ovzRzisZDGi2R_TSIzinyUa8k8"
-ADMIN_IDS_DEFAULT = "7417150967"
-
 # Majburiy kanallar. Yangi kanal qo'shish uchun ro'yxatga yozing: ["@kanal1", "@kanal2"]
 DEFAULT_CHANNELS = ["@kino_20227"]
 
@@ -30,14 +26,12 @@ def read_channels() -> tuple:
 
 @dataclass(frozen=True)
 class Config:
-    token: str = os.getenv("BOT_TOKEN") or BOT_TOKEN_DEFAULT
+    token: str = os.getenv("BOT_TOKEN", "")
     admins: frozenset = frozenset(
-        int(x)
-        for x in (os.getenv("ADMIN_IDS") or ADMIN_IDS_DEFAULT).replace(" ", "").split(",")
-        if x
+        int(x) for x in os.getenv("ADMIN_IDS", "").replace(" ", "").split(",") if x
     )
     channels: tuple = read_channels()
-    db_path: str = "kino.db"
+    db_path: str = os.getenv("DB_PATH", "kino.db")
 
 
 cfg = Config()
