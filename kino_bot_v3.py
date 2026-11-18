@@ -13,6 +13,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import CallbackQuery, InlineKeyboardMarkup, Message
 from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiohttp import web  # <-- Render port ochishi uchun qo'shildi
 
 # Majburiy kanallar. Yangi kanal qo'shish uchun ro'yxatga yozing: ["@kanal1", "@kanal2"]
 DEFAULT_CHANNELS = ["@kino_20227"]
@@ -311,11 +312,31 @@ async def on_text(message: Message, bot: Bot) -> None:
     await message.answer(T[lang]["results"], reply_markup=b.as_markup())
 
 
+# --- Render uchun Web Server (Port ochish va UptimeRobot uchun) ---
+async def handle_web(request):
+    return web.Response(text="Bot is running!")
+
+async b_runner = None
+
+async def start_web_server():
+    app = web.Application()
+    app.router.add_get("/", handle_web)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 10000))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+
+
 async def main() -> None:
     logging.basicConfig(level=logging.INFO)
     if not cfg.token:
         raise SystemExit("BOT_TOKEN o'rnatilmagan")
     await init_db()
+    
+    # Veb serverni ishga tushirish (Render port talabini qondirish uchun)
+    await start_web_server()
+
     bot = Bot(cfg.token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
     dp.include_router(router)
